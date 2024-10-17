@@ -1,0 +1,25 @@
+ /*
+  * Decidindo entre usar `throw new Exception` e `MessageBox.Show`:
+  * 
+  * Usar `throw new Exception`:
+  * - É a prática recomendada em bibliotecas de código e na lógica de negócios de uma aplicação, pois permite
+  *   que o código chamador decida como lidar com o erro (tratamento de exceção, logging, mostrar uma mensagem ao usuário, etc.).
+  * - Adequado para falhas irrecuperáveis onde o erro indica uma condição crítica que requer atenção imediata.
+  * 
+  * Usar `MessageBox.Show`:
+  * - Apropriado para aplicações com interface de usuário (GUI), como Windows Forms ou WPF, onde você deseja informar
+  *   o usuário sobre um erro ou condição excepcional de forma direta e amigável.
+  * - Útil para interações diretas com o usuário, especialmente para erros não críticos ou que podem ser corrigidos pelo usuário.
+  * 
+  * Considerações importantes:
+  * - Experiência do Usuário: Exceções não capturadas podem levar a uma experiência de usuário ruim, interrompendo a aplicação
+  *   inesperadamente. MessageBoxes devem ser usadas para fornecer feedback direto ao usuário, mas com moderação para evitar sobrecarga.
+  * - Logging: Independentemente da abordagem escolhida, é crucial registrar adequadamente os erros através de arquivos de log,
+  *   sistemas de monitoramento de aplicações, ou outras ferramentas de diagnóstico.
+  * - Tratamento de Exceção: Se optar por lançar uma exceção em uma camada da aplicação (como a lógica de negócios), assegure-se
+  *   de implementar um tratamento de exceção adequado em um nível mais alto (interface do usuário), onde você pode decidir por
+  *   exibir uma MessageBox, registrar o erro, ou tomar outras ações.
+  * 
+  * Resumo: Utilize exceções para sinalizar condições de erro em bibliotecas e lógica de negócios, e reserve MessageBoxes para
+  * interação direta com o usuário em aplicações GUI, considerando sempre a experiência do usuário e a separação de preocupações.
+  */

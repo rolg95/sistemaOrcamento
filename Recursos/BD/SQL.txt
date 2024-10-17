@@ -1,0 +1,75 @@
+/* Verifica se o banco de dados já existe e cria se não existir */
+IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'bd_chamados_tecnicos_v3')
+BEGIN
+    CREATE DATABASE bd_chamados_tecnicos_v3;
+END
+GO
+
+/* Seleciona o banco de dados para uso */
+USE bd_chamados_tecnicos_v3;
+GO
+
+/* Verifica e cria a tabela Clientes se ela não existir */
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Clientes')
+BEGIN
+    CREATE TABLE Clientes (
+        CodigoCliente int PRIMARY KEY identity,
+        Nome nvarchar(50),
+        Profissao nvarchar(30),
+        Setor nvarchar(20),
+        Cep nvarchar(10),
+        Rua nvarchar(50),
+        Numero int,
+        Cidade nvarchar(50),
+        Estado nvarchar(20),
+        Observacao nvarchar(MAX)
+    );
+END
+GO
+
+/* Verifica e cria a tabela Tecnicos se ela não existir */
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Tecnicos')
+BEGIN
+    CREATE TABLE Tecnicos (
+        CodigoTecnico int PRIMARY KEY identity,
+        Nome nvarchar(50),
+        Especialidade nvarchar(20),
+        Email nvarchar(50),
+        SenhaHash nvarchar(256)
+    );
+END
+GO
+
+/* Verifica e cria a tabela Chamados se ela não existir, incluindo chaves estrangeiras */
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Chamados')
+BEGIN
+    CREATE TABLE Chamados (
+        CodigoChamado int PRIMARY KEY identity,
+        DataSolicitacao datetime,
+        Ocorrencia nvarchar(255),
+        Problema nvarchar(255),
+        Concluido bit,
+        fk_Clientes_CodigoCliente int,
+        fk_Tecnicos_CodigoTecnico int,
+        CONSTRAINT FK_Chamados_Clientes FOREIGN KEY (fk_Clientes_CodigoCliente) REFERENCES Clientes(CodigoCliente) ON DELETE NO ACTION,
+        CONSTRAINT FK_Chamados_Tecnicos FOREIGN KEY (fk_Tecnicos_CodigoTecnico) REFERENCES Tecnicos(CodigoTecnico) ON DELETE NO ACTION
+    );
+END
+GO
+
+/* Verifica e cria a tabela Telefones se ela não existir */
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Telefones' AND schema_id = SCHEMA_ID('dbo'))
+BEGIN
+    CREATE TABLE dbo.Telefones (
+        CodigoTelefone int IDENTITY(1,1) PRIMARY KEY,
+        Numero nvarchar(15),
+        Tipo nvarchar(10) CHECK (Tipo IN ('Celular', 'Residencial', 'Comercial')),
+        fk_ClienteCodigoCliente int NULL,
+        fk_TecnicoCodigoTecnico int NULL,
+        CONSTRAINT FK_Telefones_Clientes FOREIGN KEY (fk_ClienteCodigoCliente) REFERENCES Clientes(CodigoCliente) ON DELETE CASCADE,
+        CONSTRAINT FK_Telefones_Tecnicos FOREIGN KEY (fk_TecnicoCodigoTecnico) REFERENCES Tecnicos(CodigoTecnico) ON DELETE CASCADE,
+        CONSTRAINT CHK_Telefone_ClienteOuTecnico CHECK ((fk_ClienteCodigoCliente IS NOT NULL AND fk_TecnicoCodigoTecnico IS NULL) OR (fk_ClienteCodigoCliente IS NULL AND fk_TecnicoCodigoTecnico IS NOT NULL))
+    );
+END
+GO
+
